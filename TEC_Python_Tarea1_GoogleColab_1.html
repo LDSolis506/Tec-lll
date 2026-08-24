@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Interactiva — Tarea 1 Python · Google Colab · TEC</title>
+<style>
+:root{
+  --ink:#15202b; --paper:#f5f2eb; --paper2:#ede8de; --line:#d6cfc0;
+  --blue:#1e4fa3; --blue-d:#122f6e; --blue-s:#dde8f9; --blue-m:#4a7fcb;
+  --green:#2e7250; --green-s:#d9eedf; --amber:#a0611a; --amber-s:#f5e2c8;
+  --red:#a0382e; --red-s:#f5dbd9;
+  --mono:'Courier New',monospace; --sans:'Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;padding-bottom:80px;}
+
+/* HERO */
+.hero{background:var(--blue-d);color:#eef3fc;padding:32px 24px 52px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,transparent 1px 60px),repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 60px);pointer-events:none;}
+.hero-tag{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8aabe0;margin-bottom:10px;}
+.hero h1{font-size:clamp(22px,3.5vw,32px);font-weight:700;max-width:660px;line-height:1.25;position:relative;}
+.hero p{font-size:13.5px;color:#b8ccec;max-width:580px;margin-top:8px;position:relative;}
+
+/* PROGRESS CARD */
+.dash-wrap{max-width:960px;margin:-28px auto 0;padding:0 16px;position:relative;z-index:10;}
+.dash{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 32px rgba(18,47,110,.13);padding:20px 22px 18px;}
+.dash-top{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:12px;}
+.dash-pct{font-size:46px;font-weight:700;color:var(--blue-d);line-height:1;font-family:var(--mono);}
+.dash-info{flex:1;}
+.dash-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8a8070;margin-bottom:2px;}
+.dash-frac{font-size:13px;color:#6a6050;}
+.track{height:16px;background:var(--paper2);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:5px;}
+.fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue-m),var(--blue-d));border-radius:8px 0 0 8px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:#aaa090;}
+.dash-msg{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;color:#4a4235;}
+.pills{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+.pill{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);background:var(--paper);color:#8a8070;cursor:pointer;transition:all .2s;}
+.pill.done{background:var(--green-s);border-color:var(--green);color:var(--green);}
+.pill:hover{border-color:var(--blue);color:var(--blue);}
+
+/* MAIN */
+.wrap{max-width:960px;margin:0 auto;padding:0 16px;}
+
+/* PAD DIAGRAM — GLASSMORPHISM REDESIGN */
+.pad-wrap{
+  margin:30px 0 20px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:var(--glass);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  overflow:hidden;
+  box-shadow:var(--sh2);
+}
+.pad-head{
+  background:linear-gradient(90deg,rgba(26,111,255,0.07),rgba(0,200,232,0.05));
+  padding:13px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:11px;
+  cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+.pad-head-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:linear-gradient(135deg,var(--bl),var(--cy));
+  box-shadow:0 0 0 4px rgba(0,200,232,0.12);
+  flex-shrink:0;
+}
+.pad-head span{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:500;flex:1;}
+.pad-chev{color:var(--ink3);flex-shrink:0;transition:transform .25s;}
+.pad-wrap.collapsed .pad-chev{transform:rotate(-90deg);}
+.pad-wrap.collapsed .pad-collapsible{display:none;}
+.pad-body{display:grid;grid-template-columns:1fr 1.65fr 1fr;gap:14px;min-height:240px;padding:18px;}
+.pad-col{
+  padding:16px 15px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  position:relative;
+}
+.pad-col-label{
+  font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--bl);font-weight:600;margin-bottom:11px;
+  display:flex;align-items:center;gap:6px;
+}
+.pad-col-label::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:linear-gradient(135deg,var(--bl),var(--cy));flex-shrink:0;
+}
+.pad-left{background:linear-gradient(160deg,rgba(26,111,255,0.045),rgba(255,255,255,0.4));}
+.pad-center{background:linear-gradient(160deg,rgba(0,200,232,0.04),rgba(255,255,255,0.55));}
+.pad-right{background:linear-gradient(160deg,rgba(26,111,255,0.045),rgba(255,255,255,0.4));}
+.pad-hint{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 20px;background:rgba(0,200,232,0.05);
+  border-bottom:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink3);
+}
+.pad-hint svg{color:var(--bl2);flex-shrink:0;}
+.pad-searchbar{
+  background:rgba(255,255,255,0.85);border:1px solid var(--border);border-radius:20px;
+  padding:6px 12px;font-size:10.5px;color:var(--ink3);margin-bottom:10px;
+}
+.pad-item{
+  background:rgba(255,255,255,0.85);border:1px solid var(--border);border-radius:8px;
+  padding:6px 10px;font-size:10.5px;color:var(--ink2);margin-bottom:5px;
+  transition:all .2s;cursor:pointer;
+}
+.pad-item:hover{border-color:var(--bl2);background:rgba(26,111,255,0.06);transform:translateX(2px);}
+.pad-item.hl{
+  background:linear-gradient(90deg,rgba(26,111,255,0.12),rgba(0,200,232,0.08));
+  border-color:var(--bl2);color:var(--bl);font-weight:600;
+  box-shadow:0 2px 8px rgba(26,111,255,0.12);
+}
+.pad-item.selected{
+  background:linear-gradient(90deg,rgba(26,111,255,0.2),rgba(0,200,232,0.16));
+  border-color:var(--bl);color:var(--ink);font-weight:600;
+  box-shadow:0 0 0 2px rgba(26,111,255,0.18),0 4px 12px rgba(26,111,255,0.18);
+  transform:translateX(2px);
+}
+.pad-block{
+  border-radius:9px;padding:7px 11px;font-size:10.5px;margin-bottom:6px;
+  border:1px solid;position:relative;backdrop-filter:blur(4px);
+  cursor:pointer;transition:all .2s;
+}
+.pad-block:hover{filter:brightness(0.97);transform:scale(1.015);}
+.pad-block.selected{
+  box-shadow:0 0 0 2px var(--bl),0 4px 14px rgba(26,111,255,0.25);
+  transform:scale(1.02);z-index:2;
+}
+.pad-block.b-blue{background:rgba(26,111,255,0.09);border-color:rgba(26,111,255,0.25);color:var(--bl);}
+.pad-block.b-cyan{background:rgba(0,200,232,0.09);border-color:rgba(0,200,232,0.3);color:#006a80;}
+.pad-block.b-amber{background:rgba(255,160,0,0.08);border-color:rgba(255,160,0,0.25);color:#7a5000;}
+.pad-block.b-green{background:rgba(0,168,120,0.08);border-color:rgba(0,168,120,0.25);color:#00533a;}
+.pad-block.b-loop{
+  background:rgba(255,255,255,0.5);border:1px dashed rgba(26,111,255,0.3);
+  color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:9.5px;
+}
+.pad-conn{
+  width:2px;height:9px;margin:0 auto;
+  background:linear-gradient(180deg,var(--bl),var(--cy));
+  opacity:.4;border-radius:2px;
+  transition:opacity .2s,width .2s;
+}
+.pad-conn.lit{opacity:1;width:3px;}
+.pad-indent{
+  padding-left:13px;border-left:2px solid;
+  border-image:linear-gradient(180deg,var(--bl),var(--cy)) 1;
+  margin-left:5px;
+}
+.pad-var{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;padding:6px 9px;margin-bottom:4px;
+  background:rgba(255,255,255,0.7);border:1px solid var(--border);border-radius:7px;
+  cursor:pointer;transition:all .2s;
+}
+.pad-var:hover{border-color:var(--bl2);background:rgba(0,200,232,0.06);transform:translateX(-2px);}
+.pad-var.selected{
+  background:linear-gradient(90deg,rgba(0,200,232,0.14),rgba(26,111,255,0.1));
+  border-color:var(--bl);
+  box-shadow:0 0 0 2px rgba(0,200,232,0.18),0 4px 12px rgba(0,200,232,0.15);
+  transform:translateX(-2px);
+}
+.pad-var span:first-child{color:var(--ink2);}
+.pad-var span:last-child{font-family:'JetBrains Mono',monospace;color:var(--bl);font-size:9.5px;font-weight:600;}
+.pad-foot{
+  padding:12px 20px;background:rgba(26,111,255,0.03);
+  border-top:1px solid var(--border);font-size:12px;color:var(--ink2);
+  transition:background .25s;
+}
+.pad-foot b{color:var(--bl);}
+.pad-foot.active{background:rgba(26,111,255,0.08);}
+
+/* LEGEND ROW */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;padding:12px 16px;background:var(--blue-d);border-radius:4px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#c0d3f0;}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+
+/* STAGE */
+.stage{margin-top:40px;}
+.stage-head{display:flex;align-items:center;gap:14px;padding-bottom:10px;border-bottom:2px solid var(--ink);margin-bottom:6px;}
+.stage-num{font-size:32px;font-weight:700;color:var(--blue-d);line-height:1;font-family:var(--mono);}
+.stage-title{font-size:20px;font-weight:700;color:var(--ink);}
+.stage-meta{margin-left:auto;font-family:var(--mono);font-size:11px;color:#8a8070;}
+.stage-desc{font-size:13px;color:#5a5245;margin:8px 0 16px;max-width:700px;}
+
+/* WHERE-AM-I banner */
+.where{display:flex;align-items:center;gap:10px;background:var(--blue-d);border-radius:4px;padding:9px 14px;margin-bottom:14px;}
+.where-zone{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--blue-m);color:#fff;padding:3px 8px;border-radius:20px;}
+.where-arrow{color:#7aaae0;font-size:12px;}
+.where-desc{font-size:12px;color:#ccdaf5;}
+
+/* TASK CARD */
+.task{border:1px solid var(--line);border-radius:6px;background:#fff;margin-bottom:10px;overflow:hidden;transition:border-color .25s,background .25s;}
+.task.done{background:var(--green-s);border-color:var(--green);}
+.task-header{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+.task-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--blue-m);background:var(--blue-s);padding:2px 7px;border-radius:12px;flex-shrink:0;}
+.task.done .task-num{background:var(--green-s);color:var(--green);}
+.task-title{flex:1;font-size:14px;color:var(--ink);font-weight:600;}
+.task.done .task-title{color:var(--green);}
+.task-title span{font-weight:400;color:#5a5245;}
+.task.done .task-title span{color:#3a6245;}
+.task-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.task-chevron{font-size:12px;color:#aaa;transition:transform .25s;}
+.task.open .task-chevron{transform:rotate(180deg);}
+
+/* SWITCH */
+.sw{width:50px;height:26px;background:var(--paper2);border:1px solid var(--line);border-radius:13px;position:relative;cursor:pointer;transition:background .25s,border-color .25s;flex-shrink:0;}
+.sw.on{background:var(--green);border-color:var(--green);}
+.sw-knob{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.22);transition:left .25s cubic-bezier(.4,0,.2,1);}
+.sw.on .sw-knob{left:26px;}
+.sw-no{position:absolute;right:5px;top:5px;font-family:var(--mono);font-size:8px;color:#aaa;transition:opacity .2s;}
+.sw-si{position:absolute;left:6px;top:5px;font-family:var(--mono);font-size:8px;color:#fff;opacity:0;transition:opacity .2s;font-weight:700;}
+.sw.on .sw-si{opacity:1;}
+.sw.on .sw-no{opacity:0;}
+
+/* DRAWER */
+.task-drawer{display:none;border-top:1px solid var(--line);background:#fdfcfa;}
+.task.open .task-drawer{display:block;}
+.task.done .task-drawer{border-top-color:#b0dbbf;background:#f4fbf6;}
+.drawer-inner{padding:16px 16px 18px;}
+
+/* STEPS inside drawer */
+.steps-list{list-style:none;counter-reset:steps;}
+.steps-list li{counter-increment:steps;display:flex;gap:12px;margin-bottom:14px;position:relative;}
+.steps-list li::before{content:counter(steps);font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;background:var(--blue-m);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-body{flex:1;font-size:13px;color:#3a3228;}
+.step-body b{color:var(--blue-d);}
+.step-body .path{font-family:var(--mono);font-size:11px;background:var(--blue-s);color:var(--blue-d);padding:1px 6px;border-radius:3px;display:inline-block;}
+.step-body .val{font-family:var(--mono);font-size:11px;background:#f0ede5;padding:1px 6px;border-radius:3px;display:inline-block;}
+.step-body .key{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--ink);color:#eee;padding:2px 7px;border-radius:3px;}
+
+/* MINI PAD inside drawer */
+.mini-pad{background:var(--paper2);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:12px 0;font-size:11px;}
+.mini-pad-head{background:var(--blue-d);color:#c0d3f0;padding:6px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.07em;}
+.mini-pad-body{display:grid;grid-template-columns:1fr 1.5fr 1fr;min-height:90px;}
+.mini-col{padding:8px 10px;border-right:1px solid var(--line);}
+.mini-col:last-child{border-right:none;}
+.mini-col-lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#9a8f7e;margin-bottom:6px;}
+.mini-item{background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;margin-bottom:3px;font-size:10px;color:#4a4235;}
+.mini-item.hl2{background:var(--amber-s);border-color:var(--amber);color:var(--amber);font-weight:600;}
+.mini-block{border-radius:2px;padding:3px 6px;margin-bottom:3px;font-size:10px;border:1px solid;}
+.mini-block.b2{background:var(--blue-s);border-color:var(--blue);color:var(--blue-d);}
+.mini-block.b2g{background:var(--green-s);border-color:var(--green);color:var(--green);}
+.mini-block.b2a{background:var(--amber-s);border-color:var(--amber);color:var(--amber);}
+.mini-block.b2r{background:var(--red-s);border-color:var(--red);color:var(--red);}
+.mini-var{display:flex;justify-content:space-between;font-size:9.5px;padding:3px 0;border-bottom:1px solid var(--paper2);}
+.mini-var span:last-child{font-family:var(--mono);color:var(--blue);font-size:9px;}
+.mini-var.hl2{color:var(--amber);font-weight:600;}
+.mini-var.hl2 span:last-child{color:var(--amber);}
+
+/* TIP / WARNING boxes */
+.tip{border-left:3px solid var(--blue);background:var(--blue-s);padding:10px 13px;border-radius:0 4px 4px 0;font-size:12.5px;color:var(--blue-d);margin:10px 0;}
+.tip b{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:3px;color:var(--blue-m);}
+.warn{border-left:3px solid var(--amber);background:var(--amber-s);padding:10px 13px;border-radius:0 4px 4px 0;font-size:12.5px;color:#6a3e0a;margin:10px 0;}
+.warn b{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:3px;color:var(--amber);}
+.ok{border-left:3px solid var(--green);background:var(--green-s);padding:10px 13px;border-radius:0 4px 4px 0;font-size:12.5px;color:#1e4a30;margin:10px 0;}
+.ok b{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:3px;color:var(--green);}
+
+/* COMPLETE BANNER */
+.done-banner{display:none;background:var(--blue-d);color:#eef3fc;border-radius:6px;padding:28px 24px;text-align:center;margin-top:40px;}
+.done-banner.show{display:block;}
+.done-banner h2{font-size:26px;font-weight:700;margin-bottom:8px;}
+.done-banner p{font-size:13px;color:#b8ccec;}
+
+/* RESET */
+.reset-row{text-align:right;margin-top:12px;}
+.reset-btn{font-family:var(--mono);font-size:10px;color:#8a8070;background:none;border:1px solid var(--line);border-radius:20px;padding:5px 14px;cursor:pointer;transition:all .2s;}
+.reset-btn:hover{color:var(--red);border-color:var(--red);}
+
+@media(max-width:680px){
+  .pad-body,.mini-pad-body{grid-template-columns:1fr;}
+  .pad-col,.mini-col{border-right:none;border-bottom:1px solid var(--line);}
+  .pad-col:last-child,.mini-col:last-child{border-bottom:none;}
+  .stage-head{flex-wrap:wrap;} .stage-meta{margin-left:0;}
+}
+
+/* ===== GLASSMORPHISM COMMAND CENTER OVERRIDES ===== */
+/* Fuentes del sistema */
+
+:root{
+  --bl:#1a6fff;--bl2:#0095e8;--cy:#00c8e8;
+  --ink:#0a1628;--ink2:#1e3354;--ink3:#4a6890;
+  --paper:#f5f8ff;--paper2:#eaf0ff;
+  --glass:rgba(255,255,255,0.78);
+  --border:rgba(26,111,255,0.12);--border2:rgba(0,200,232,0.2);
+  --sh:0 4px 20px rgba(26,111,255,0.09),0 1px 3px rgba(0,0,0,0.04);
+  --sh2:0 8px 36px rgba(26,111,255,0.15);
+  --sh3:0 20px 60px rgba(26,111,255,0.17),0 4px 16px rgba(0,0,0,0.07);
+}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
+@keyframes glide{0%{transform:translateX(-200%);}100%{transform:translateX(400%);}}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);padding-bottom:70px;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(26,111,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(26,111,255,0.03) 1px,transparent 1px);background-size:42px 42px;}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb1{width:600px;height:600px;top:-200px;right:-160px;background:radial-gradient(circle,rgba(26,111,255,0.07),transparent 70%);}
+.orb2{width:450px;height:450px;bottom:-120px;left:-100px;background:radial-gradient(circle,rgba(0,200,232,0.06),transparent 70%);}
+
+/* HERO RESTYLE */
+.hero{position:relative;z-index:1;padding:50px 26px 42px;background:linear-gradient(155deg,rgba(8,18,55,0.97),rgba(10,24,65,0.99));overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(26,111,255,0.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,232,0.04) 1px,transparent 1px);background-size:45px 45px;z-index:1;}
+.hero-bg-art{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+.hero-vignette{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(8,16,50,0.99) 0%,rgba(8,16,50,0.94) 32%,rgba(8,16,50,0.55) 58%,rgba(8,16,50,0.18) 78%,rgba(8,16,50,0.05) 100%);}
+.hero-content-wrap{position:relative;z-index:2;max-width:640px;}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#88b8f5;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cy);animation:blink 2s ease infinite;flex-shrink:0;}
+.hero h1{font-size:clamp(24px,4vw,40px);font-weight:700;color:#fff;line-height:1.22;margin-bottom:10px;max-width:640px;text-shadow:0 2px 18px rgba(0,0,0,0.35);}
+.hero h1 .grad{background:linear-gradient(90deg,var(--bl),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:14px;color:rgba(165,200,255,0.92);max-width:540px;text-shadow:0 1px 12px rgba(0,0,0,0.3);}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;}
+.chip{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);border-radius:20px;padding:4px 13px;font-size:12px;color:rgba(195,220,255,0.82);}
+
+/* SVG flow decoration in hero */
+.hero-flow-svg{position:absolute;right:0;top:0;width:42%;height:100%;opacity:.32;pointer-events:none;}
+
+/* DASHBOARD */
+.dash-wrap{position:relative;z-index:2;max-width:940px;margin:-26px auto 0;padding:0 18px;}
+.dash{background:var(--glass);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--border);border-radius:18px;box-shadow:var(--sh3);padding:22px 26px 20px;}
+.dash-top{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:12px;}
+.dash-metric{display:flex;align-items:center;gap:14px;}
+.dash-divider{width:1px;align-self:stretch;background:linear-gradient(180deg,transparent,var(--border),transparent);flex-shrink:0;}
+.dash-pct{font-family:'JetBrains Mono',monospace;font-size:50px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--bl),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.dash-clock{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(26,111,255,0.08),rgba(0,200,232,0.06));
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+}
+.dash-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:2px;}
+.dash-frac{font-size:14px;color:var(--ink2);}
+.dash-time-row{display:flex;align-items:baseline;gap:5px;}
+.dash-time{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--ink);}
+.dash-time-sep{font-size:13px;color:var(--ink3);}
+.dash-time-total{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3);}
+.track{height:13px;background:var(--paper2);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:5px;}
+.fill{height:100%;width:0%;border-radius:7px;background:linear-gradient(90deg,var(--bl),var(--cy));transition:width .55s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;}
+.fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.27),transparent);animation:glide 2.2s ease infinite;}
+.ticks{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink3);}
+.dash-msg{margin-top:13px;padding-top:13px;border-top:1px solid var(--border);font-size:13px;color:var(--ink2);}
+.pills{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap;}
+.pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--paper);color:var(--ink3);cursor:pointer;transition:all .2s;}
+.pill:hover{border-color:var(--bl);color:var(--bl);background:rgba(26,111,255,0.06);}
+.pill.done{background:linear-gradient(90deg,rgba(26,111,255,0.1),rgba(0,200,232,0.1));border-color:var(--bl2);color:var(--bl);}
+
+/* WRAP + SECTION LABELS */
+.wrap{max-width:940px;margin:0 auto;padding:0 18px;position:relative;z-index:1;}
+.section-label{display:flex;align-items:center;gap:12px;margin:36px 0 14px;}
+.section-label::before{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border));}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+.section-label span{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);white-space:nowrap;}
+
+/* PANEL MAP */
+.panel-ref{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh);margin-bottom:10px;}
+.panel-ref-head{display:flex;align-items:center;gap:9px;background:linear-gradient(90deg,rgba(26,111,255,0.055),rgba(0,200,232,0.03));padding:10px 18px;border-bottom:1px solid var(--border);}
+.panel-ref-head .dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--bl),var(--cy));}
+.panel-ref-head span{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);}
+.panel-ref-foot{padding:9px 18px;background:rgba(26,111,255,0.022);border-top:1px solid var(--border);font-size:12px;color:var(--ink2);}
+.panel-ref-foot b{color:var(--bl);}
+
+/* LOGIC TABLE */
+.logic-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:9px 0;}
+.logic-table th{padding:8px 12px;text-align:left;background:linear-gradient(90deg,rgba(26,111,255,0.065),rgba(0,200,232,0.04));border:1px solid var(--border);color:var(--bl);font-size:11px;font-weight:600;}
+.logic-table td{padding:8px 12px;border:1px solid var(--border);color:var(--ink2);}
+.logic-table tr:nth-child(even) td{background:rgba(26,111,255,0.016);}
+.badge-ship{background:rgba(0,168,120,0.1);color:#00533a;border:1px solid rgba(0,168,120,0.2);padding:2px 8px;border-radius:10px;font-size:11px;font-family:'JetBrains Mono',monospace;}
+.badge-cancel{background:rgba(200,50,30,0.08);color:#7a1500;border:1px solid rgba(200,50,30,0.17);padding:2px 8px;border-radius:10px;font-size:11px;font-family:'JetBrains Mono',monospace;}
+.badge-skip{background:rgba(100,120,160,0.08);color:#3a5070;border:1px solid rgba(100,120,160,0.17);padding:2px 8px;border-radius:10px;font-size:11px;font-family:'JetBrains Mono',monospace;}
+
+/* STAGE */
+.stage{margin-top:42px;}
+.stage-head{display:flex;align-items:center;gap:14px;margin-bottom:5px;padding-bottom:11px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+.stage-meta{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);}
+.stage-chev{color:var(--ink3);transition:transform .25s;flex-shrink:0;}
+.stage.collapsed .stage-chev{transform:rotate(-90deg);}
+.stage.collapsed .stage-desc,.stage.collapsed .task{display:none;}
+.stage-num{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--bl),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.stage-title{font-size:18px;font-weight:600;color:var(--ink);}
+.stage-desc{font-size:13px;color:var(--ink2);margin:8px 0 13px;max-width:680px;line-height:1.6;}
+
+/* WHERE BANNER */
+.where{display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:linear-gradient(90deg,rgba(8,18,55,0.92),rgba(10,28,70,0.88));border:1px solid rgba(26,111,255,0.26);border-radius:8px;padding:9px 14px;margin-bottom:13px;}
+.where-zone{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(90deg,var(--bl),var(--cy));color:#fff;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.where-arrow{color:rgba(0,200,232,0.55);font-size:14px;}
+.where-desc{font-size:12px;color:rgba(175,210,255,0.87);}
+
+/* TASK CARD */
+.task{border:1px solid var(--border);border-radius:12px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-bottom:9px;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
+.task:hover{border-color:rgba(26,111,255,0.26);box-shadow:var(--sh);}
+.task.done{background:rgba(26,111,255,0.035);border-color:rgba(0,200,232,0.34);}
+.task-header{display:flex;align-items:center;gap:11px;padding:13px 15px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+.task-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;background:linear-gradient(135deg,rgba(26,111,255,0.1),rgba(0,200,232,0.08));border:1px solid var(--border2);color:var(--bl);padding:2px 8px;border-radius:10px;flex-shrink:0;}
+.task.done .task-num{background:linear-gradient(135deg,rgba(26,111,255,0.16),rgba(0,200,232,0.14));color:var(--bl2);}
+.task-title{flex:1;font-size:13.5px;font-weight:600;color:var(--ink);}
+.task.done .task-title{color:var(--bl2);}
+.task-title span{font-weight:400;font-size:12.5px;color:var(--ink3);}
+.task.done .task-title span{color:rgba(0,149,232,0.64);}
+.task-right{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.task-time{
+  display:flex;align-items:center;gap:4px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);
+  background:rgba(26,111,255,0.06);border:1px solid var(--border);
+  padding:3px 8px;border-radius:20px;white-space:nowrap;
+}
+.task-time svg{width:11px;height:11px;flex-shrink:0;opacity:.7;}
+.task.done .task-time{background:rgba(0,200,232,0.1);border-color:rgba(0,200,232,0.3);color:var(--bl2);}
+.task.done .task-time svg{opacity:1;}
+.task-chevron{font-size:11px;color:var(--ink3);transition:transform .22s;}
+.task.open .task-chevron{transform:rotate(180deg);}
+
+/* SWITCH */
+.switch{width:47px;height:25px;background:var(--paper2);border:1px solid var(--border);border-radius:13px;position:relative;cursor:pointer;transition:all .22s;flex-shrink:0;}
+.switch.on{background:linear-gradient(90deg,var(--bl),var(--bl2));border-color:transparent;}
+.switch-knob{width:19px;height:19px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .22s cubic-bezier(.4,0,.2,1);box-shadow:0 1px 3px rgba(0,0,0,.17);}
+.switch.on .switch-knob{left:25px;}
+.lbl-off{position:absolute;right:5px;top:5px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink3);transition:opacity .2s;}
+.lbl-on{position:absolute;left:6px;top:5px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#fff;opacity:0;font-weight:700;transition:opacity .2s;}
+.switch.on .lbl-on{opacity:1;}.switch.on .lbl-off{opacity:0;}
+
+/* DRAWER */
+.task-drawer{display:none;border-top:1px solid var(--border);background:rgba(252,254,255,0.92);}
+.task.open .task-drawer{display:block;}
+.drawer-inner{padding:16px 17px 19px;}
+
+/* STEPS */
+.steps-list{list-style:none;counter-reset:sc;}
+.steps-list li{counter-increment:sc;display:flex;gap:11px;margin-bottom:13px;}
+.steps-list li::before{content:counter(sc);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--bl),var(--cy));border-radius:50%;width:21px;height:21px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-body{flex:1;font-size:13px;color:var(--ink2);line-height:1.57;}
+.step-body b{color:var(--bl);font-weight:600;}
+.path{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--paper2);color:var(--bl);padding:1px 6px;border-radius:4px;border:1px solid var(--border);}
+.val{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--paper2);color:var(--bl);padding:1px 6px;border-radius:4px;border:1px solid var(--border);}
+.key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--ink);color:#eee;padding:2px 7px;border-radius:4px;}
+
+/* MINI DIAGRAM */
+.mini-pad{background:linear-gradient(135deg,rgba(8,18,55,0.95),rgba(10,28,70,0.92));border:1px solid rgba(26,111,255,0.26);border-radius:10px;overflow:hidden;margin:11px 0;}
+.mini-pad-head{padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:rgba(100,160,255,0.76);border-bottom:1px solid rgba(26,111,255,0.17);}
+.mini-pad-body{display:grid;grid-template-columns:1fr 1.5fr 1fr;min-height:88px;}
+.mini-col{padding:9px 11px;border-right:1px solid rgba(26,111,255,0.13);}
+.mini-col:last-child{border-right:none;}
+.mini-col-lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(100,160,255,0.53);margin-bottom:5px;}
+.mini-item{background:rgba(26,111,255,0.1);border:1px solid rgba(26,111,255,0.17);border-radius:4px;padding:3px 7px;font-size:10px;color:rgba(155,210,255,0.87);margin-bottom:3px;}
+.mini-item.hl2{background:rgba(0,200,232,0.13);border-color:rgba(0,200,232,0.28);color:rgba(0,229,212,0.87);font-weight:600;}
+.mini-item.am{background:rgba(255,160,0,0.09);border-color:rgba(255,160,0,0.2);color:rgba(255,200,80,0.87);}
+.mini-item.gr{background:rgba(0,200,100,0.09);border-color:rgba(0,200,100,0.2);color:rgba(70,220,140,0.87);}
+.mini-item.rd{background:rgba(220,50,50,0.09);border-color:rgba(220,50,50,0.17);color:rgba(255,120,120,0.87);}
+.mini-item.loop{border-style:dashed;background:rgba(255,255,255,0.025);color:rgba(140,180,255,0.53);font-family:'JetBrains Mono',monospace;font-size:9px;}
+.mini-var{display:flex;justify-content:space-between;font-size:9.5px;padding:4px 0;border-bottom:1px solid rgba(26,111,255,0.08);color:rgba(155,210,255,0.77);}
+.mini-var span:last-child{font-family:'JetBrains Mono',monospace;color:rgba(0,200,232,0.74);font-size:9px;}
+.mini-var.hl2{color:rgba(0,229,212,0.87);}
+
+/* CALLOUTS */
+.tip{border-left:2px solid var(--bl);background:rgba(26,111,255,0.052);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink2);margin:9px 0;}
+.tip b{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:3px;color:var(--bl);}
+.warn{border-left:2px solid #d08a00;background:rgba(208,138,0,0.062);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12.5px;color:#5a3a00;margin:9px 0;}
+.warn b{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:3px;color:#c07800;}
+.ok{border-left:2px solid #00a070;background:rgba(0,160,112,0.062);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12.5px;color:#003a28;margin:9px 0;}
+.ok b{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:3px;color:#00a070;}
+
+/* COMPLETE BANNER */
+.complete-banner{display:none;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(8,18,55,0.97),rgba(10,28,80,0.98));border:1px solid rgba(26,111,255,0.3);border-radius:14px;padding:28px 26px;text-align:center;margin-top:40px;}
+.complete-banner::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(26,111,255,0.042) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,232,0.033) 1px,transparent 1px);background-size:30px 30px;pointer-events:none;}
+.complete-banner.show{display:block;}
+.complete-banner h2{font-size:22px;font-weight:700;color:#fff;position:relative;margin-bottom:7px;}
+.complete-banner h2 span{background:linear-gradient(90deg,var(--bl),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.complete-banner p{font-size:13px;color:rgba(155,200,255,0.8);position:relative;}
+.reset-row{text-align:right;margin-top:11px;padding-bottom:50px;}
+.reset-btn{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);background:none;border:1px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;transition:all .2s;}
+.reset-btn:hover{color:var(--bl);border-color:var(--bl);}
+@media(max-width:680px){
+  .pad-mock,.mini-pad-body{grid-template-columns:1fr;}
+  .pad-col,.mini-col{border-right:none;border-bottom:1px solid var(--border);}
+  .stage-head{flex-wrap:wrap;}.stage-meta{margin-left:0;}
+}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <svg class="hero-bg-art" viewBox="0 0 1400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="heroGradMain" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1a6fff" stop-opacity="0.55"/>
+        <stop offset="50%" stop-color="#00a8e8" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#00e5d4" stop-opacity="0.3"/>
+      </linearGradient>
+      <linearGradient id="heroGradFade" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00c8e8" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#00c8e8" stop-opacity="0.7"/>
+      </linearGradient>
+      <radialGradient id="nodeglow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#00e5d4" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#00e5d4" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="softblur"><feGaussianBlur stdDeviation="1.2"/></filter>
+    </defs>
+
+    <circle cx="1180" cy="90" r="130" stroke="url(#heroGradMain)" stroke-width="1" fill="none" opacity="0.5"/>
+    <circle cx="1280" cy="280" r="90" stroke="url(#heroGradMain)" stroke-width="1" fill="none" opacity="0.45"/>
+    <circle cx="1000" cy="380" r="60" stroke="url(#heroGradMain)" stroke-width="1" fill="none" opacity="0.4"/>
+
+    <path d="M650 60 Q820 30 980 110 T1280 90" stroke="url(#heroGradFade)" stroke-width="1.4" fill="none" opacity="0.7"/>
+    <path d="M700 200 Q880 160 1050 230 T1350 210" stroke="url(#heroGradFade)" stroke-width="1.4" fill="none" opacity="0.65"/>
+    <path d="M620 340 Q800 300 960 360 T1300 330" stroke="url(#heroGradFade)" stroke-width="1.2" fill="none" opacity="0.55"/>
+    <path d="M900 80 Q920 200 860 280 T950 420" stroke="url(#heroGradFade)" stroke-width="1" fill="none" opacity="0.45" stroke-dasharray="3 5"/>
+    <path d="M1150 130 Q1100 220 1180 290 T1100 420" stroke="url(#heroGradFade)" stroke-width="1" fill="none" opacity="0.5" stroke-dasharray="3 5"/>
+    <path d="M780 120 L980 110" stroke="#00c8e8" stroke-width="0.8" opacity="0.35"/>
+    <path d="M850 230 L1050 230" stroke="#1a6fff" stroke-width="0.8" opacity="0.3"/>
+
+    <g opacity="0.9">
+      <circle cx="980" cy="110" r="5" fill="url(#nodeglow)"/>
+      <circle cx="980" cy="110" r="2.5" fill="#00e5d4"/>
+      <circle cx="1280" cy="90" r="5" fill="url(#nodeglow)"/>
+      <circle cx="1280" cy="90" r="2.5" fill="#00c8e8"/>
+      <circle cx="1050" cy="230" r="6" fill="url(#nodeglow)"/>
+      <circle cx="1050" cy="230" r="3" fill="#1a6fff"/>
+      <circle cx="1350" cy="210" r="4" fill="url(#nodeglow)"/>
+      <circle cx="1350" cy="210" r="2" fill="#00e5d4"/>
+      <circle cx="960" cy="360" r="4" fill="url(#nodeglow)"/>
+      <circle cx="960" cy="360" r="2" fill="#00c8e8"/>
+      <circle cx="1300" cy="330" r="4" fill="url(#nodeglow)"/>
+      <circle cx="1300" cy="330" r="2" fill="#1a6fff"/>
+      <circle cx="860" cy="280" r="3.5" fill="url(#nodeglow)"/>
+      <circle cx="1180" cy="290" r="4" fill="url(#nodeglow)"/>
+    </g>
+
+    <g stroke="#0095e8" stroke-width="0.6" opacity="0.25" filter="url(#softblur)">
+      <rect x="1140" y="350" width="34" height="34" rx="4" fill="none"/>
+      <rect x="1148" y="358" width="18" height="18" rx="2" fill="none"/>
+      <rect x="1230" y="40" width="26" height="26" rx="3" fill="none"/>
+    </g>
+
+    <g opacity="0.18">
+      <path d="M1390 0 L1390 500" stroke="#1a6fff" stroke-width="60"/>
+    </g>
+  </svg>
+  <div class="hero-vignette"></div>
+  <div class="hero-content-wrap">
+    <div class="hero-tag">GUIA INTERACTIVA — TAREA 1 PYTHON</div>
+    <h1>Fundamentos de Programacion con Python<br>Tarea 1 en Google Colab · TEC</h1>
+    <p>Guia paso a paso para resolver los 21 ejercicios de la Tarea 1 en Google Colab. Incluye la configuracion del entorno, el codigo de cada ejercicio con explicacion y la lista de verificacion antes de entregar.</p>
+  </div>
+</div>
+
+<!-- PROGRESS DASHBOARD -->
+<div class="dash-wrap">
+  <div class="dash">
+    <div class="dash-top">
+      <div class="dash-metric">
+        <div class="dash-pct" id="pctLabel">0%</div>
+        <div class="dash-info">
+          <div class="dash-label">Avance del proyecto</div>
+          <div class="dash-frac" id="fracLabel">0 de 28 tareas completadas</div>
+        </div>
+      </div>
+      <div class="dash-divider"></div>
+      <div class="dash-metric">
+        <div class="dash-clock">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="url(#clockGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <defs><linearGradient id="clockGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a6fff"/><stop offset="100%" stop-color="#00c8e8"/></linearGradient></defs>
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15.5 14" id="clockHand"></polyline>
+          </svg>
+        </div>
+        <div class="dash-info">
+          <div class="dash-label">Tiempo invertido</div>
+          <div class="dash-time-row">
+            <span class="dash-time" id="timeSpentLabel">0 min</span>
+            <span class="dash-time-sep">/</span>
+            <span class="dash-time-total" id="timeTotalLabel">2h 3m est.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+    <div class="ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+    <div class="dash-msg" id="dashMsg">Aun no has marcado tareas. Empieza en la Etapa 01 y haz click en cada tarea para ver las instrucciones.</div>
+    <div class="pills" id="pillsRow"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- PANEL REFERENCE DIAGRAM -->
+<div class="pad-wrap">
+  <div class="pad-head" onclick="togglePad(this)"><div class="pad-head-dot"></div><span>Mapa del panel de Power Automate Desktop — ubica estas 3 zonas en tu pantalla</span><svg class="pad-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+  <div class="pad-collapsible">
+  <div class="pad-hint"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Haz click en una accion, bloque o variable para ver como se conectan entre si</div>
+  <div class="pad-body">
+    <div class="pad-col pad-left">
+      <div class="pad-col-label">① Panel Izquierdo — Acciones</div>
+      <div class="pad-searchbar">🔍 Buscar accion…</div>
+      <div class="pad-item hl" data-link="excel" onclick="padSelect('excel',this)">▶ Iniciar Excel</div>
+      <div class="pad-item" data-link="leer" onclick="padSelect('leer',this)">Leer hoja de calculo</div>
+      <div class="pad-item" data-link="bucle" onclick="padSelect('bucle',this)">For each (bucle)</div>
+      <div class="pad-item" data-link="extraer" onclick="padSelect('extraer',this)">Establecer variable</div>
+      <div class="pad-item" data-link="status" onclick="padSelect('status',this)">If / Else (condicional)</div>
+      <div class="pad-item" data-link="comment" onclick="padSelect('comment',this)">Rellenar campo web</div>
+      <div class="pad-item" data-link="actions" onclick="padSelect('actions',this)">Hacer click en web</div>
+      <div class="pad-item" data-link="edge" onclick="padSelect('edge',this)">Esperar</div>
+    </div>
+    <div class="pad-col pad-center">
+      <div class="pad-col-label">② Panel Central — Tu flujo (bloques en orden)</div>
+      <div class="pad-block b-blue" data-link="excel" onclick="padSelect('excel',this)">1. Iniciar Excel</div><div class="pad-conn"></div>
+      <div class="pad-block b-blue" data-link="leer" onclick="padSelect('leer',this)">2. Leer Sheet1 → ExcelData</div><div class="pad-conn"></div>
+      <div class="pad-block b-blue" data-link="edge" onclick="padSelect('edge',this)">3. Abrir Edge → URL ARC</div><div class="pad-conn"></div>
+      <div class="pad-block b-loop" data-link="bucle" onclick="padSelect('bucle',this)">▾ Para cada fila en ExcelData</div>
+      <div class="pad-indent">
+        <div class="pad-block b-blue" data-link="extraer" onclick="padSelect('extraer',this)">4. Extraer Order#, Qty, Comment</div><div class="pad-conn"></div>
+        <div class="pad-block b-amber" data-link="status" onclick="padSelect('status',this)">5. ¿Status = Close/Shipped? → Saltar</div><div class="pad-conn"></div>
+        <div class="pad-block b-blue" data-link="actions" onclick="padSelect('actions',this)">6. Click Actions → Line Items</div><div class="pad-conn"></div>
+        <div class="pad-block b-green" data-link="shipcancel" onclick="padSelect('shipcancel',this)">7. Ship (Qty>0) / Cancel (Qty=0)</div><div class="pad-conn"></div>
+        <div class="pad-block b-blue" data-link="comment" onclick="padSelect('comment',this)">8. Comment → Enter</div>
+      </div>
+      <div class="pad-block b-loop" data-link="bucle" onclick="padSelect('bucle',this)">▴ Fin del bucle</div>
+    </div>
+    <div class="pad-col pad-right">
+      <div class="pad-col-label">③ Panel Derecho — Variables</div>
+      <div class="pad-var" data-link="leer" onclick="padSelect('leer',this)"><span>ExcelData</span><span>[tabla]</span></div>
+      <div class="pad-var" data-link="bucle" onclick="padSelect('bucle',this)"><span>CurrentRow</span><span>[fila]</span></div>
+      <div class="pad-var" data-link="extraer" onclick="padSelect('extraer',this)"><span>OrderNumber</span><span>"ORD-001"</span></div>
+      <div class="pad-var" data-link="shipcancel" onclick="padSelect('shipcancel',this)"><span>OrderQty</span><span>5</span></div>
+      <div class="pad-var" data-link="status" onclick="padSelect('status',this)"><span>OrderStatus</span><span>"Open"</span></div>
+      <div class="pad-var" data-link="comment" onclick="padSelect('comment',this)"><span>Comment</span><span>"Urgente"</span></div>
+      <div class="pad-var" data-link="edge" onclick="padSelect('edge',this)"><span>Browser</span><span>[Edge]</span></div>
+    </div>
+  </div>
+  <div class="pad-foot" id="padFoot">Cada vez que la guia diga <b>"panel izquierdo"</b>, <b>"panel central"</b> o <b>"panel derecho"</b>, mira la zona correspondiente de arriba en tu pantalla real.</div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 01 ============================= -->
+<div class="wrap">
+
+<!-- ============================= ETAPA 01 ============================= -->
+<div class="stage" data-stage="1">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">01</div>
+    <div class="stage-title">Configurar Google Colab — entorno de trabajo</div>
+    <div class="stage-meta">6 tareas · 15 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">Antes de resolver los ejercicios hay que preparar el entorno. Google Colab es gratuito y funciona en el navegador — no hay que instalar nada.</div>
+
+  <div class="task" data-task="1-1" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">1.1</div>
+      <div class="task-title">Ingresar a Google Colab <span>— colab.research.google.com</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Navegador — Chrome, Edge o Firefox</div><div class="where-arrow">→</div><div class="where-desc">colab.research.google.com</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Abre tu navegador (Chrome, Edge, Firefox) y escribe en la barra de direcciones: <span class="val">colab.research.google.com</span> → presiona <span class="key">Enter</span>.</div></li>
+        <li><div class="step-body">Inicia sesion con tu cuenta de Google (Gmail). Si no tienes cuenta, debes crear una en <span class="val">accounts.google.com</span> antes de continuar.</div></li>
+        <li><div class="step-body">Se abre una ventana llamada <b>"Examinar"</b> con cuadernos recientes. Puedes cerrarla haciendo click en la X — no la necesitas para esta tarea.</div></li>
+      </ol>
+      <div class="tip"><b>Google Colab es completamente gratuito</b> — no requiere instalacion ni configuracion. Todo funciona directamente en el navegador con tu cuenta de Gmail.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="1-2" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">1.2</div>
+      <div class="task-title">Crear un cuaderno nuevo y ponerle tu nombre <span>— Archivo → Cuaderno nuevo</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Menu superior → Archivo</div><div class="where-arrow">→</div><div class="where-desc">Cuaderno nuevo → cambiar nombre</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">En la esquina superior izquierda, haz click en <b>"Archivo"</b> → selecciona <b>"Cuaderno nuevo"</b> (New notebook). Se abre un cuaderno vacio con una celda de codigo lista para usar.</div></li>
+        <li><div class="step-body">Cambia el nombre del archivo haciendo click sobre el titulo en la parte superior — donde dice <span class="val">Untitled0.ipynb</span>.</div></li>
+        <li><div class="step-body">Escribe el nombre con el formato que pide el enunciado, usando guion bajo para separar las palabras. Ejemplo: <span class="val">Maria_granados_tarea_1</span>. Presiona <span class="key">Enter</span> para confirmar.</div></li>
+      </ol>
+      <div class="warn"><b>El nombre del archivo debe llevar tu nombre real con guion bajo ( _ )</b> — tal como lo indica el enunciado de la tarea. Un nombre incorrecto puede causar descuento de puntos al entregar.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="1-3" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">1.3</div>
+      <div class="task-title">Conocer las partes de la pantalla <span>— celdas, botones y menu</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Cuaderno abierto</div><div class="where-arrow">→</div><div class="where-desc">Identificar los elementos principales antes de empezar</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body"><b>Celdas de codigo</b> — son los recuadros grises donde se escribe el codigo Python. Hay una lista al abrir el cuaderno. Cada ejercicio va en su propia celda.</div></li>
+        <li><div class="step-body"><b>Boton ▶ (reproducir)</b> — aparece a la izquierda de cada celda al pasar el cursor. Ejecuta el codigo de esa celda. El resultado aparece justo abajo.</div></li>
+        <li><div class="step-body"><b>Boton "+ Codigo"</b> — en la barra superior o al pasar el cursor entre celdas. Agrega una nueva celda de codigo debajo de la actual.</div></li>
+        <li><div class="step-body"><b>Boton "+ Texto"</b> — agrega una celda de texto. Se usa para escribir el titulo de cada ejercicio (## Ejercicio 1, ## Ejercicio 2, etc.).</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="1-4" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">1.4</div>
+      <div class="task-title">Escribir y ejecutar codigo en una celda <span>— boton ▶ o Shift+Enter</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Primera celda del cuaderno</div><div class="where-arrow">→</div><div class="where-desc">Click dentro de la celda → escribir → ejecutar</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Haz click dentro de la celda de codigo (el recuadro gris). Verás que el borde se resalta en azul — indica que la celda esta activa.</div></li>
+        <li><div class="step-body">Escribe el codigo Python del ejercicio.</div></li>
+        <li><div class="step-body">Presiona el boton <b>▶</b> a la izquierda de la celda, o usa el atajo de teclado <span class="key">Shift+Enter</span>. El resultado aparece justo debajo de la celda.</div></li>
+        <li><div class="step-body">Para agregar el siguiente ejercicio, haz click en <b>"+ Codigo"</b> y repite el proceso.</div></li>
+      </ol>
+      <div class="tip"><b>Shift+Enter</b> es el atajo mas rapido — ejecuta la celda actual y mueve el cursor a la siguiente. Si no hay celda siguiente, crea una nueva automaticamente.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="1-5" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">1.5</div>
+      <div class="task-title">Organizar el cuaderno — celda de texto antes de cada ejercicio <span>— patron obligatorio</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Cuaderno — antes de cada ejercicio</div><div class="where-arrow">→</div><div class="where-desc">+ Texto → ## Ejercicio N → + Codigo → solucion</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">El enunciado pide identificar cada ejercicio con su numero. El patron correcto es:<br>
+          1. Click en <b>"+ Texto"</b> → escribe <span class="val">## Ejercicio 1</span> (el ## crea un subtitulo)<br>
+          2. Ejecuta esa celda con ▶ o <span class="key">Shift+Enter</span><br>
+          3. Click en <b>"+ Codigo"</b> → escribe la solucion del ejercicio<br>
+          4. Ejecuta la celda de codigo<br>
+          5. Repite para cada uno de los 21 ejercicios
+        </div></li>
+      </ol>
+      <div class="tip"><b>Repite este patron para los 21 ejercicios</b> — celda de texto con el titulo + celda de codigo con la solucion. Asi el cuaderno queda ordenado y el profesor puede identificar cada ejercicio facilmente.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="1-6" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">1.6</div>
+      <div class="task-title">Guardar y descargar el archivo <span>— Ctrl+S para guardar · Archivo → Descargar para exportar</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Menu → Archivo → Descargar</div><div class="where-arrow">→</div><div class="where-desc">Descargar .ipynb o .py segun lo que pida el profesor</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Colab guarda automaticamente en Google Drive, pero puedes forzar el guardado con <span class="key">Ctrl+S</span> (Windows) o <span class="key">Cmd+S</span> (Mac).</div></li>
+        <li><div class="step-body">Para descargar el archivo: <b>Archivo</b> → <b>Descargar</b> → <b>Descargar .ipynb</b> (formato de cuaderno). Si el profesor pide .py usa la opcion <b>Descargar .py</b>.</div></li>
+        <li><div class="step-body">Verifica que el nombre del archivo descargado sea correcto antes de subirlo a la plataforma del curso.</div></li>
+      </ol>
+      <div class="warn"><b>Ejecuta todas las celdas antes de descargar</b> — usa <b>Entorno de ejecucion → Reiniciar y ejecutar todo</b> para correr el cuaderno completo de una sola vez y confirmar que no hay errores.</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 02 ============================= -->
+<div class="stage" data-stage="2">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">02</div>
+    <div class="stage-title">Ejercicios 1 al 5 — Variables y tipos de datos</div>
+    <div class="stage-meta">5 tareas · 15 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">Los primeros 5 ejercicios trabajan con variables — texto (str), decimales (float) y enteros (int) — y como combinarlas en un print.</div>
+
+  <div class="task" data-task="2-1" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">2.1</div>
+      <div class="task-title">Ejercicio 1 — Variable de texto "inicio" <span>— tipo str</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 1 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Variable de tipo str — texto entre comillas</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Agrega una celda de texto con <b>## Ejercicio 1</b> y ejecutala.</div></li>
+        <li><div class="step-body">Agrega una celda de codigo y escribe:</div></li>
+      </ol>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          inicio = "esta es mi primera practica"<br>
+          print(inicio)
+        </div>
+      </div>
+      <ol class="steps-list" start="3">
+        <li><div class="step-body">Ejecuta con ▶ o <span class="key">Shift+Enter</span>. Resultado esperado: <span class="val">esta es mi primera practica</span></div></li>
+      </ol>
+      <div class="tip"><b>En Python todo texto debe ir entre comillas simples ' ' o dobles " "</b> — ambas funcionan igual. Si el texto no lleva comillas, Python lo confunde con el nombre de una variable y da error.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="2-2" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">2.2</div>
+      <div class="task-title">Ejercicio 2 — Variable decimal "pi" <span>— tipo float</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 2 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Variable de tipo float — numero decimal sin comillas</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Celda de texto: <b>## Ejercicio 2</b>. Celda de codigo:</div></li>
+      </ol>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          pi = 3.14<br>
+          print(pi)
+        </div>
+      </div>
+      <ol class="steps-list" start="2">
+        <li><div class="step-body">Resultado esperado: <span class="val">3.14</span>. Los numeros NO llevan comillas — si les pones comillas Python los trata como texto y no como numero.</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="2-3" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">2.3</div>
+      <div class="task-title">Ejercicio 3 — Variable entera "edad" <span>— tipo int con tu edad real</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 3 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Sustituye el 20 por tu edad real en anos cumplidos</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir (cambia el 20 por tu edad):</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          edad = 20&nbsp;&nbsp;# sustituya el 20 por su edad real<br>
+          print(edad)
+        </div>
+      </div>
+      <div class="tip"><b>El simbolo # en Python es un comentario</b> — todo lo que va despues del # en esa linea no se ejecuta. Solo sirve como nota para quien lee el codigo. No afecta el resultado.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="2-4" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">2.4</div>
+      <div class="task-title">Ejercicio 4 — type() para comprobar el tipo de cada variable <span>— str, float, int</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 4 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">type() identifica si una variable es str, float o int</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          print(type(inicio))<br>
+          print(type(pi))<br>
+          print(type(edad))
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado en ese orden:<br>
+          <span class="val">&lt;class 'str'&gt;</span> — inicio es texto<br>
+          <span class="val">&lt;class 'float'&gt;</span> — pi es decimal<br>
+          <span class="val">&lt;class 'int'&gt;</span> — edad es entero
+        </div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="2-5" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">2.5</div>
+      <div class="task-title">Ejercicio 5 — f-string para combinar texto y la variable edad <span>— print(f"...")</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 5 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">f-string — la f va antes de las comillas</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          print(f"Mi edad actual es: {edad}")
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado: <span class="val">Mi edad actual es: 20</span> (o la edad que definiste en el ejercicio 3).</div></li>
+        <li><div class="step-body">La <b>f</b> antes de las comillas convierte la cadena en una f-string. Todo lo que va entre llaves <span class="val">{}</span> se reemplaza automaticamente por el valor de la variable. Sin la f, Python imprime las llaves como texto literal.</div></li>
+      </ol>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 03 ============================= -->
+<div class="stage" data-stage="3">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">03</div>
+    <div class="stage-title">Ejercicios 6 al 9 — Input, operaciones y comparaciones</div>
+    <div class="stage-meta">4 tareas · 12 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">Interaccion con el usuario, operaciones aritmeticas y comparaciones logicas con operadores > < ==.</div>
+
+  <div class="task" data-task="3-1" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">3.1</div>
+      <div class="task-title">Ejercicio 6 — input() para leer un dato del usuario <span>— destino</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 6 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Al ejecutar aparece un cuadro para escribir la respuesta</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          destino = input("¿Adonde va a ser su siguiente destino? ")<br>
+          print("¿Adonde va a ser su siguiente destino?", destino)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Al ejecutar esta celda aparece un cuadro de texto debajo de la celda — escribe tu respuesta ahi y presiona <span class="key">Enter</span>. El resultado imprime la pregunta seguida de lo que escribiste.</div></li>
+      </ol>
+      <div class="tip"><b>input() siempre devuelve texto (str)</b> — aunque el usuario escriba un numero, llega como texto. Para usarlo como numero hay que convertirlo con int() o float().</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="3-2" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">3.2</div>
+      <div class="task-title">Ejercicio 7 — Multiplicacion 4574 * 893 <span>— resultado esperado: 4084582</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 7 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Operacion aritmetica — el asterisco * es la multiplicacion</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          resultado = 4574 * 893<br>
+          print(resultado)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado: <span class="val">4084582</span>.</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="3-3" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">3.3</div>
+      <div class="task-title">Ejercicio 8 — Operacion combinada con potencia <span>— ** para elevar a una potencia</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 8 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Revisa los numeros exactos en tu enunciado impreso</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Estructura general (ajusta los numeros exactos de tu enunciado):</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          resultado = 468 + 7364 - 5 ** (2)<br>
+          print(resultado)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">En Python <span class="val">**</span> es la potencia. <span class="val">5 ** 2</span> significa 5 elevado al cuadrado (25). Los parentesis respetan el orden de operaciones igual que en matematicas.</div></li>
+        <li><div class="step-body">Revisa tu enunciado original antes de escribir la formula — los numeros y el exponente exacto deben coincidir con lo que el profesor indica. Si tienes duda, consulta antes de entregar.</div></li>
+      </ol>
+      <div class="tip"><b>Simbolos aritmeticos en Python:</b> + suma · - resta · * multiplicacion · / division · ** potencia · // division entera · % residuo</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="3-4" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">3.4</div>
+      <div class="task-title">Ejercicio 9 — Operadores logicos: >, < y == <span>— x=78, y=63</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 9 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Los operadores de comparacion devuelven True o False</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          x = 78<br>
+          y = 63<br>
+          print(x > y)<br>
+          print(x &lt; y)<br>
+          print(x == y)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado: <span class="val">True</span>, <span class="val">False</span>, <span class="val">False</span> — porque 78 es mayor que 63, no es menor, y no son iguales.</div></li>
+      </ol>
+      <div class="warn"><b>== (doble igual) compara · = (un igual) asigna</b> — si usas un solo = en una comparacion Python da error de sintaxis. Siempre usa == para comparar si dos valores son iguales.</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 04 ============================= -->
+<div class="stage" data-stage="4">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">04</div>
+    <div class="stage-title">Ejercicios 10 al 13 — Condicionales, bucles y funciones</div>
+    <div class="stage-meta">4 tareas · 15 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">Los ejercicios mas complejos de la tarea — if/elif/else, bucle for, try/except y funciones con def. Requieren sangria (indentacion) correcta.</div>
+
+  <div class="task" data-task="4-1" data-min="5">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">4.1</div>
+      <div class="task-title">Ejercicio 10 — Condicional con validacion de numero entre 10 y 12 <span>— if / elif / else + try/except</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 10 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">La sangria (4 espacios o Tab) es obligatoria en Python</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir (respetar la sangria exacta):</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:11.5px;color:rgba(160,210,255,0.95);line-height:1.9;">
+          try:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;numero = int(input("Ingrese un numero entre el 10 y el 12: "))<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;if numero == 10:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("el numero ingresado es 10")<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;elif numero == 11:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("el numero ingresado es 11")<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;elif numero == 12:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("el numero ingresado es 12")<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Ha ingresado un numero que no esta entre el 10 y el 12")<br>
+          except ValueError:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;print("Debe ingresar un numero valido")
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">La sangria son <b>4 espacios</b> (o un Tab) antes de cada linea dentro de un bloque. En Python la sangria es obligatoria — sin ella el codigo da error.</div></li>
+        <li><div class="step-body"><span class="val">int(input(...))</span> convierte la respuesta del usuario de texto a numero entero. Sin el <span class="val">int()</span> el numero llega como texto y las comparaciones no funcionan.</div></li>
+        <li><div class="step-body"><span class="val">try/except</span> evita que el programa se detenga si el usuario escribe letras en lugar de un numero — en ese caso el bloque <span class="val">except ValueError</span> muestra el mensaje de error.</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="4-2" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">4.2</div>
+      <div class="task-title">Ejercicio 11 — Bucle for que imprime letra por letra <span>— "Aprendizaje_Automatico"</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 11 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">El bucle for recorre cada letra de la palabra</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          palabra = "Aprendizaje_Automatico"<br>
+          for letra in palabra:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;print(letra)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">El bucle <span class="val">for letra in palabra:</span> recorre la cadena caracter por caracter. En cada vuelta la variable <span class="val">letra</span> tiene el valor de la letra actual. Resultado: cada letra impresa en una linea distinta, incluyendo el guion bajo.</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="4-3" data-min="4">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">4.3</div>
+      <div class="task-title">Ejercicio 12 — Funcion con condicional: si a > b suma, si no resta <span>— a=6, b=9</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 12 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">def define la funcion · return devuelve el resultado</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          a = 6<br>
+          b = 9<br><br>
+          def operacion(a, b):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;if a > b:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return a + b<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return a - b<br><br>
+          resultado = operacion(a, b)<br>
+          print(resultado)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado: <span class="val">-3</span> — porque a (6) no es mayor que b (9), entonces se resta: 6 - 9 = -3.</div></li>
+        <li><div class="step-body"><span class="val">def operacion(a, b):</span> define la funcion. <span class="val">return</span> devuelve el resultado al lugar donde se llamo la funcion. La ultima linea llama la funcion y guarda el resultado en <span class="val">resultado</span>.</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="4-4" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">4.4</div>
+      <div class="task-title">Ejercicio 13 — Modificar la funcion: suma solo si a y b son mayores que 5 <span>— operador and</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 13 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">and combina dos condiciones — ambas deben ser True</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          def operacion_v2(a, b):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;if a > 5 and b > 5:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return a + b<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return a - b<br><br>
+          resultado2 = operacion_v2(a, b)<br>
+          print(resultado2)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Con a=6 y b=9: ambos son mayores que 5, entonces se suma: 6 + 9 = <span class="val">15</span>.</div></li>
+        <li><div class="step-body"><span class="val">and</span> combina dos condiciones — solo se cumple si <b>ambas</b> son verdaderas al mismo tiempo. Si alguna es falsa, va al <span class="val">else</span>.</div></li>
+      </ol>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 05 ============================= -->
+<div class="stage" data-stage="5">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">05</div>
+    <div class="stage-title">Ejercicios 14 al 19 — Listas, tuplas y diccionarios</div>
+    <div class="stage-meta">6 tareas · 12 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">Las tres estructuras de datos principales de Python — listas (modificables), tuplas (inmutables) y diccionarios (pares clave-valor).</div>
+
+  <div class="task" data-task="5-1" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">5.1</div>
+      <div class="task-title">Ejercicio 14 — Lista "profesiones" con 4 elementos <span>— corchetes [ ]</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 14 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Las listas van entre corchetes, elementos separados por coma</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          profesiones = ["cientifico de datos", "ingeniero de datos",<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ingeniero de machine learning", "consultor big data"]<br>
+          print(profesiones)
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="5-2" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">5.2</div>
+      <div class="task-title">Ejercicio 15 — Ordenar la lista en reversa <span>— .sort(reverse=True)</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 15 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">sort() modifica la lista original — reverse=True invierte el orden</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          profesiones.sort(reverse=True)<br>
+          print(profesiones)
+        </div>
+      </div>
+      <div class="tip"><b>reverse=True</b> ordena de la Z a la A. Si se omite o se pone <span class="val">reverse=False</span>, ordena de la A a la Z. Este metodo modifica la lista original.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="5-3" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">5.3</div>
+      <div class="task-title">Ejercicio 16 — Tupla "comida" con 6 elementos <span>— parentesis ( )</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 16 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Las tuplas van entre parentesis y no se pueden modificar</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          comida = ("sushi", "pollo", "pescado", "papas", "hamburguesas", "pizza")<br>
+          print(comida)
+        </div>
+      </div>
+      <div class="tip"><b>Tupla vs Lista:</b> las tuplas usan parentesis ( ) y NO se pueden modificar despues de creadas. Las listas usan corchetes [ ] y SI se pueden modificar. Esta diferencia es la base del ejercicio 21.</div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="5-4" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">5.4</div>
+      <div class="task-title">Ejercicio 17 — Verificar si "aguacate" esta en la tupla <span>— operador in</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 17 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">in devuelve True si el elemento esta en la coleccion</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          print("aguacate" in comida)
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado: <span class="val">False</span> — "aguacate" no esta en la tupla comida.</div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="5-5" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">5.5</div>
+      <div class="task-title">Ejercicio 18 — Diccionario "informacion" con nombres y edades <span>— llaves { } con clave:valor</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 18 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Diccionario — cada elemento tiene clave y valor separados por dos puntos</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          informacion = {<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Camila": 1,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Pedro": 2,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Katherine": 3,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Manuel": 5,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Roy": 8,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Katty": 13,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"Angel": 21<br>
+          }<br>
+          print(informacion)
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="5-6" data-min="2">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">5.6</div>
+      <div class="task-title">Ejercicio 19 — Imprimir solo la edad de Katty <span>— resultado esperado: 13</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 19 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Acceder a un valor del diccionario por su clave</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:12px;color:rgba(160,210,255,0.95);line-height:1.8;">
+          print(informacion["Katty"])
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body">Resultado esperado: <span class="val">13</span>. Para acceder a un valor del diccionario se escribe el nombre del diccionario seguido de la clave entre corchetes y comillas: <span class="val">informacion["Katty"]</span>.</div></li>
+      </ol>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 06 ============================= -->
+<div class="stage" data-stage="6">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">06</div>
+    <div class="stage-title">Ejercicios 20 y 21 — Calculadora y respuesta escrita</div>
+    <div class="stage-meta">2 tareas · 8 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">El ejercicio 20 es el mas complejo — combina input(), float(), condicionales y una funcion completa. El ejercicio 21 es una respuesta escrita en celda de texto.</div>
+
+  <div class="task" data-task="6-1" data-min="6">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">6.1</div>
+      <div class="task-title">Ejercicio 20 — Funcion calculadora con 4 operaciones segun condiciones <span>— float() para admitir decimales</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de texto: ## Ejercicio 20 · luego celda de codigo</div><div class="where-arrow">→</div><div class="where-desc">Probar con varios valores para verificar cada caso</div></div>
+      <div class="mini-pad">
+        <div class="mini-pad-head">Codigo a escribir:</div>
+        <div style="padding:10px 16px;font-family:'Courier New',monospace;font-size:11.5px;color:rgba(160,210,255,0.95);line-height:1.9;">
+          def calculadora():<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;num1 = float(input("Ingrese el primer numero (num1): "))<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;num2 = float(input("Ingrese el segundo numero (num2): "))<br><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;if num1 &lt; 0:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Division:", num1 / num2)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;elif num1 > 20:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Multiplicacion:", num1 * num2)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;elif num1 > num2:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Suma:", num1 + num2)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;elif num1 &lt; num2:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Resta:", num1 - num2)<br><br>
+          calculadora()
+        </div>
+      </div>
+      <ol class="steps-list">
+        <li><div class="step-body"><span class="val">float()</span> convierte el texto del input a numero decimal — admite negativos y decimales, a diferencia de <span class="val">int()</span> que solo acepta enteros.</div></li>
+        <li><div class="step-body">Prueba la funcion 4 veces con distintos valores para verificar cada caso:<br>
+          — num1 negativo (ej. -5) → debe imprimir Division<br>
+          — num1 mayor que 20 (ej. 25) → debe imprimir Multiplicacion<br>
+          — num1 mayor que num2 (ej. 15 y 8) → debe imprimir Suma<br>
+          — num1 menor que num2 (ej. 3 y 10) → debe imprimir Resta
+        </div></li>
+      </ol>
+    </div></div>
+  </div>
+
+  <div class="task" data-task="6-2" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">6.2</div>
+      <div class="task-title">Ejercicio 21 — Diferencia entre tupla y lista en celda de texto <span>— con tus propias palabras</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Celda de TEXTO (no de codigo) — + Texto</div><div class="where-arrow">→</div><div class="where-desc">Explicacion con tus propias palabras — no copiar textual</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Haz click en <b>"+ Texto"</b> (no "+ Codigo"). Escribe el titulo <span class="val">## Ejercicio 21</span> en la primera linea.</div></li>
+        <li><div class="step-body">Escribe la diferencia con tus propias palabras. Como guia de apoyo:<br><br>
+          <b>Lista</b>: se escribe entre corchetes <span class="val">[ ]</span>. Se puede modificar despues de creada — se pueden agregar, eliminar o cambiar elementos.<br><br>
+          <b>Tupla</b>: se escribe entre parentesis <span class="val">( )</span>. Una vez creada NO se puede modificar — sus elementos son fijos.<br><br>
+          Redacta esta idea con tus propias palabras — el ejercicio pide una explicacion personal.
+        </div></li>
+        <li><div class="step-body">Ejecuta la celda de texto con ▶ o <span class="key">Shift+Enter</span> para que el titulo y el texto queden formateados correctamente.</div></li>
+      </ol>
+      <div class="ok"><b>21 ejercicios completados</b> — ejecuta todo el cuaderno con Entorno de ejecucion → Reiniciar y ejecutar todo antes de descargar.</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ============================= ETAPA 07 ============================= -->
+<div class="stage" data-stage="7">
+  <div class="stage-head" onclick="toggleStage(this)">
+    <div class="stage-num">07</div>
+    <div class="stage-title">Lista de verificacion antes de entregar</div>
+    <div class="stage-meta">1 tarea · 3 min</div>
+    <svg class="stage-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="stage-desc">Revisa todo esto antes de subir la tarea a la plataforma del curso.</div>
+
+  <div class="task" data-task="7-1" data-min="3">
+    <div class="task-header" onclick="toggleOpen(this)">
+      <div class="task-num">7.1</div>
+      <div class="task-title">Verificacion final — 6 puntos antes de subir la tarea <span>— Reiniciar y ejecutar todo primero</span></div>
+      <div class="task-right">
+        <div class="sw" onclick="event.stopPropagation();toggleTask(this)"><span class="sw-no">NO</span><span class="sw-si">SI</span><div class="sw-knob"></div></div>
+        <div class="task-chevron">▼</div>
+      </div>
+    </div>
+    <div class="task-drawer"><div class="drawer-inner">
+      <div class="where"><div class="where-zone">Entorno de ejecucion → Reiniciar y ejecutar todo</div><div class="where-arrow">→</div><div class="where-desc">Correr el cuaderno completo de una sola vez</div></div>
+      <ol class="steps-list">
+        <li><div class="step-body">Antes de descargar, ejecuta todo el cuaderno: <b>Entorno de ejecucion</b> → <b>Reiniciar y ejecutar todo</b>. Esto limpia la memoria y corre todas las celdas en orden — confirma que no hay errores.</div></li>
+        <li><div class="step-body">Verifica estos 6 puntos:<br>
+          ☐ El cuaderno se hizo en Google Colab<br>
+          ☐ Cada ejercicio esta identificado con su numero (celda de texto "## Ejercicio N")<br>
+          ☐ Los 21 ejercicios estan en orden<br>
+          ☐ Todas las celdas fueron ejecutadas y muestran resultado<br>
+          ☐ El archivo se descargo en formato <span class="val">.ipynb</span> o <span class="val">.py</span> segun lo que pide el profesor<br>
+          ☐ El nombre del archivo incluye tu nombre: <span class="val">Nombre_apellido_tarea_1</span>
+        </div></li>
+        <li><div class="step-body">Para descargar: <b>Archivo</b> → <b>Descargar</b> → <b>Descargar .ipynb</b> (o .py si el profesor lo pide). Verifica el nombre del archivo antes de subirlo a la plataforma.</div></li>
+      </ol>
+      <div class="ok"><b>Tarea lista para entregar</b> — 21 ejercicios completados, cuaderno ordenado y archivo con el nombre correcto.</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- COMPLETE BANNER -->
+<div class="complete-banner" id="doneBanner">
+  <h2>✅ <span>Tarea 1 completada — 21 ejercicios resueltos</span></h2>
+  <p>Variables, tipos de datos, operaciones, condicionales, bucles, funciones, listas, tuplas y diccionarios. Descarga el archivo y subelo a la plataforma del curso.</p>
+</div>
+
+<div class="reset-row">
+  <button class="reset-btn" onclick="resetAll()">↺ Reiniciar progreso</button>
+</div>
+
+</div><!-- /wrap -->
+
+<div style="margin-top:40px;padding:16px 24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:940px;margin-left:auto;margin-right:auto;">
+  <span style="font-family:var(--mono);font-size:10px;color:#8a8070;">Tecnologico de Costa Rica · Fundamentos de Programacion con Python</span>
+  <span style="font-family:var(--mono);font-size:10px;color:#8a8070;">Profesor: Heiner Romero Leiva · Tarea 1 · Google Colab</span>
+</div>
+<script>
+const SK = 'tec_python_tarea1_v1';
+const tasks = () => Array.from(document.querySelectorAll('.task[data-task]'));
+const total = () => tasks().length;
+const totalMinutes = () => tasks().reduce((sum,t)=>sum+(parseInt(t.dataset.min)||0),0);
+
+function fmtTime(mins){
+  if(mins<=0) return '0 min';
+  const h = Math.floor(mins/60);
+  const m = mins%60;
+  if(h===0) return m+' min';
+  if(m===0) return h+'h';
+  return h+'h '+m+'m';
+}
+
+function load(){ try{ return JSON.parse(sessionStorage.getItem(SK)||'{}'); }catch(e){ return {}; } }
+function save(s){ try{ sessionStorage.setItem(SK,JSON.stringify(s)); }catch(e){} }
+
+function toggleOpen(header){
+  const t = header.closest('.task');
+  t.classList.toggle('open');
+}
+
+function toggleStage(header){
+  const st = header.closest('.stage');
+  st.classList.toggle('collapsed');
+}
+
+function togglePad(header){
+  const w = header.closest('.pad-wrap');
+  w.classList.toggle('collapsed');
+}
+
+function toggleTask(sw){
+  const t = sw.closest('.task');
+  const id = t.dataset.task;
+  const s = load();
+  s[id] = !s[id];
+  save(s);
+  render();
+}
+
+function render(){
+  const s = load();
+  let done = 0;
+  let minutesSpent = 0;
+  tasks().forEach(t => {
+    const id = t.dataset.task;
+    const isDone = !!s[id];
+    t.classList.toggle('done', isDone);
+    t.querySelector('.sw').classList.toggle('on', isDone);
+    if(isDone){ done++; minutesSpent += parseInt(t.dataset.min)||0; }
+  });
+  const n = total();
+  const pct = n ? Math.round(done/n*100) : 0;
+  document.getElementById('fillBar').style.width = pct+'%';
+  document.getElementById('pctLabel').textContent = pct+'%';
+  document.getElementById('fracLabel').textContent = done+' de '+n+' tareas completadas';
+  document.getElementById('timeSpentLabel').textContent = fmtTime(minutesSpent);
+  document.getElementById('timeTotalLabel').textContent = fmtTime(totalMinutes())+' est.';
+  const msg = pct===100 ? '<b>Listo.</b> El flujo esta completamente configurado en '+fmtTime(minutesSpent)+'.'
+    : pct>0 ? 'Progreso activo. Quedan <b>'+(n-done)+' tareas</b> (~'+fmtTime(totalMinutes()-minutesSpent)+') para terminar.'
+    : 'Haz click en cualquier tarea para ver las instrucciones detalladas. Comienza por la Etapa 01.';
+  document.getElementById('dashMsg').innerHTML = msg;
+
+  document.querySelectorAll('.stage').forEach(st => {
+    const stTasks = Array.from(st.querySelectorAll('.task[data-task]'));
+    const stDone = stTasks.filter(t=>s[t.dataset.task]).length;
+    const pill = document.querySelector('.pill[data-stage="'+st.dataset.stage+'"]');
+    if(pill){
+      pill.classList.toggle('done', stDone===stTasks.length && stTasks.length>0);
+      pill.textContent = 'Etapa '+st.dataset.stage+' ('+stDone+'/'+stTasks.length+')';
+    }
+  });
+  document.getElementById('doneBanner').classList.toggle('show', pct===100);
+}
+
+function buildPills(){
+  const row = document.getElementById('pillsRow');
+  document.querySelectorAll('.stage').forEach(st => {
+    const p = document.createElement('div');
+    p.className='pill'; p.dataset.stage=st.dataset.stage;
+    p.textContent='Etapa '+st.dataset.stage;
+    p.onclick=()=>{ st.classList.remove('collapsed'); st.scrollIntoView({behavior:'smooth',block:'start'}); };
+    row.appendChild(p);
+  });
+}
+
+function injectTimeBadges(){
+  const clockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>';
+  tasks().forEach(t => {
+    const mins = parseInt(t.dataset.min)||0;
+    const right = t.querySelector('.task-right');
+    if(!right || right.querySelector('.task-time')) return;
+    const badge = document.createElement('div');
+    badge.className = 'task-time';
+    badge.innerHTML = clockSvg + '<span>' + mins + ' min</span>';
+    right.insertBefore(badge, right.firstChild);
+  });
+  document.querySelectorAll('.stage').forEach(st => {
+    const stTasks = Array.from(st.querySelectorAll('.task[data-task]'));
+    const stMin = stTasks.reduce((sum,t)=>sum+(parseInt(t.dataset.min)||0),0);
+    const meta = st.querySelector('.stage-meta');
+    if(meta) meta.textContent = stTasks.length+' tareas · ~'+fmtTime(stMin);
+  });
+}
+
+const padExplain = {
+  celda: "Las celdas de codigo son los recuadros grises donde se escribe Python. El boton ▶ a la izquierda las ejecuta. Shift+Enter es el atajo de teclado para ejecutar y pasar a la siguiente celda.",
+  variables: "Una variable es un nombre que guarda un valor. inicio = 'texto' crea una variable de texto (str). pi = 3.14 crea un decimal (float). edad = 20 crea un entero (int). La funcion type() dice que tipo es cada una.",
+  fstring: "Una f-string permite mezclar texto y variables en un solo print. Se escribe f antes de las comillas: print(f'Mi edad es: {edad}'). Todo lo que va entre llaves {} se reemplaza por el valor de la variable.",
+  listas: "Las listas van entre corchetes [ ] y se pueden modificar. Las tuplas van entre parentesis ( ) y NO se pueden modificar despues de creadas. Los diccionarios van entre llaves {} con pares clave:valor.",
+  funciones: "def nombre_funcion(): define una funcion propia. El codigo dentro debe ir con sangria (4 espacios o Tab). return devuelve el resultado. La funcion no se ejecuta hasta que se llama con nombre_funcion().",
+  entregar: "Antes de entregar: Archivo → Descargar → .ipynb o .py. El nombre del archivo debe tener tu nombre con guion bajo: Maria_granados_tarea_1. Ejecutar todo con Entorno de ejecucion → Reiniciar y ejecutar todo."
+};
+
+function padSelect(link, el){
+  const wasOn = el.dataset.wasOn === '1';
+  document.querySelectorAll('.pad-item.selected,.pad-block.selected,.pad-var.selected').forEach(n=>n.classList.remove('selected'));
+  document.querySelectorAll('[data-link]').forEach(n=>{ n.dataset.wasOn=''; });
+
+  if(wasOn){
+    document.getElementById('padFoot').classList.remove('active');
+    document.getElementById('padFoot').innerHTML = 'Patron por ejercicio: celda de texto con el numero (## Ejercicio N) + celda de codigo con la solucion + ejecutar con ▶ o Shift+Enter. Ejecutar todas las celdas antes de descargar.';
+    return;
+  }
+
+  document.querySelectorAll('[data-link="'+link+'"]').forEach(n=>{
+    n.classList.add('selected');
+    n.dataset.wasOn='1';
+  });
+
+  const foot = document.getElementById('padFoot');
+  foot.classList.add('active');
+  foot.innerHTML = '<b>Conexion activa →</b> ' + (padExplain[link] || '');
+}
+
+function resetAll(){ sessionStorage.removeItem(SK); render(); }
+
+buildPills();
+injectTimeBadges();
+render();
+</script>
+</body>
+</html>
