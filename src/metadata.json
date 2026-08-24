@@ -1,0 +1,6 @@
+{
+  "name": "AIE Tracker",
+  "description": "Herramienta de seguimiento académico y tutor con IA para el curso Aplicaciones de la IA Empresarial (TEC, Módulo 3)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
